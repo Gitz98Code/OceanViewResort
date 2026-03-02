@@ -72,7 +72,3 @@ Ocean View Resort Portal is a web-based Room Reservation Management System devel
 
 ---
 
-## Author
-
-**Student Name:** Your Name  
-**Module:** CIS6003 Advanced Programming
