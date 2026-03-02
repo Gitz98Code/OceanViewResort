@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Reservation • Ocean View Resort</title>
+  <link rel="stylesheet" href="style-base.css">
+  <link rel="stylesheet" href="style-add.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <h1>Ocean View</h1>
+        <p>Staff Portal</p>
+      </div>
+
+      <nav>
+        <a href="dashboard.html">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="add.html" class="active">
+          <i class="fas fa-plus-circle"></i>
+          <span>New Reservation</span>
+        </a>
+        <a href="view.html">
+          <i class="fas fa-search"></i>
+          <span>View Reservations</span>
+        </a>
+        <a href="bill.html">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <span>Bills & Payments</span>
+        </a>
+        <a href="help.html">
+          <i class="fas fa-question-circle"></i>
+          <span>Help</span>
+        </a>
+      </nav>
+
+      <button onclick="logout()" class="btn-logout">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>New Reservation</h1>
+          <p>Create a new booking for guests</p>
+        </div>
+      </header>
+
+      <div class="form-container card glass">
+        <form id="addReservationForm">
+          <div class="form-grid">
+            <!-- Guest Name -->
+            <div class="form-group form-floating">
+              <i class="fas fa-user icon-left"></i>
+              <input type="text" id="guestName" required placeholder=" " autocomplete="off" />
+              <label for="guestName">Guest Full Name</label>
+            </div>
+
+            <!-- Contact Number -->
+            <div class="form-group form-floating">
+              <i class="fas fa-phone icon-left"></i>
+              <input type="tel" id="contactNumber" pattern="[0-9]{10}" required placeholder=" " />
+              <label for="contactNumber">Contact Number (10 digits)</label>
+            </div>
+
+            <!-- Address -->
+            <div class="form-group form-floating full-width">
+              <i class="fas fa-map-marker-alt icon-left" style="top: 1.8rem;"></i>
+              <textarea id="address" rows="2" required placeholder=" "></textarea>
+              <label for="address">Full Address</label>
+            </div>
+
+            <!-- Room Type -->
+            <div class="form-group form-floating">
+              <i class="fas fa-bed icon-left"></i>
+              <select id="roomType" required>
+                <option value="" disabled selected>Select room type</option>
+                <option value="Standard">Standard Room - $120/night</option>
+                <option value="Deluxe">Deluxe Room - $180/night</option>
+                <option value="Suite">Suite - $320/night</option>
+                <option value="Presidential">Presidential Suite - $650/night</option>
+              </select>
+              <label for="roomType">Room Type</label>
+            </div>
+
+            <!-- Number of Guests -->
+            <div class="form-group form-floating">
+              <i class="fas fa-users icon-left"></i>
+              <input type="number" id="guests" min="1" max="8" required placeholder=" " />
+              <label for="guests">Number of Guests</label>
+            </div>
+
+            <!-- Check-in Date -->
+            <div class="form-group form-floating">
+              <i class="fas fa-calendar-alt icon-left"></i>
+              <input type="date" id="checkIn" required placeholder=" " />
+              <label for="checkIn">Check-in Date</label>
+            </div>
+
+            <!-- Check-out Date -->
+            <div class="form-group form-floating">
+              <i class="fas fa-calendar-alt icon-left"></i>
+              <input type="date" id="checkOut" required placeholder=" " />
+              <label for="checkOut">Check-out Date</label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-submit">
+              <i class="fas fa-check"></i> Create Reservation
+            </button>
+            <a href="dashboard.html" class="btn-cancel">
+              <i class="fas fa-times"></i> Cancel
+            </a>
+          </div>
+
+          <p id="message" class="message"></p>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="main.js"></script>
+  <script>
+    const form = document.getElementById('addReservationForm');
+    const message = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        guestName: document.getElementById('guestName').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        contactNumber: document.getElementById('contactNumber').value.trim(),
+        roomType: document.getElementById('roomType').value,
+        checkIn: document.getElementById('checkIn').value,
+        checkOut: document.getElementById('checkOut').value,
+        guests: parseInt(document.getElementById('guests').value)
+      };
+
+      message.textContent = 'Creating reservation...';
+      message.className = 'message info';
+
+      try {
+        const res = await fetch('http://localhost:8080/add-reservation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (data.status === 'success') {
+          message.textContent = `Success! Reservation #${data.reservationNumber} created.`;
+          message.className = 'message success';
+          form.reset();
+        } else {
+          message.textContent = data.message || 'Failed to create reservation';
+          message.className = 'message error';
+        }
+      } catch (err) {
+        message.textContent = 'Connection error. Please check server.';
+        message.className = 'message error';
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

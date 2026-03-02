@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>View Reservations • Ocean View Resort</title>
+  <link rel="stylesheet" href="style-base.css">
+  <link rel="stylesheet" href="style-view.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <h1>Ocean View</h1>
+        <p>Staff Portal</p>
+      </div>
+
+      <nav>
+        <a href="dashboard.html">
+          <i class="fas fa-home"></i> Dashboard
+        </a>
+        <a href="add.html">
+          <i class="fas fa-plus-circle"></i> New Reservation
+        </a>
+        <a href="view.html" class="active">
+          <i class="fas fa-search"></i> View Reservations
+        </a>
+        <a href="bill.html">
+          <i class="fas fa-file-invoice-dollar"></i> Bills & Payments
+        </a>
+        <a href="help.html">
+          <i class="fas fa-question-circle"></i> Help
+        </a>
+      </nav>
+
+      <button onclick="logout()" class="btn-logout">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>View Reservations</h1>
+          <p>Search and manage existing bookings</p>
+        </div>
+      </header>
+
+      <div class="view-content">
+        <!-- Search Card -->
+        <div class="search-card card">
+          <div class="search-form">
+            <div class="search-input-group">
+              <i class="fas fa-search search-icon"></i>
+              <input 
+                type="number" 
+                id="reservationNumber" 
+                placeholder="Enter Reservation Number" 
+                min="1" 
+                required 
+              />
+            </div>
+            <button id="searchBtn" class="btn-search">
+              Search Reservation
+            </button>
+          </div>
+        </div>
+
+        <!-- Result Area -->
+        <div id="resultContainer" class="result-card card" style="display: none;">
+          <div class="result-header">
+            <h3>Reservation Details</h3>
+            <span id="resNumberBadge" class="res-badge"></span>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <div class="icon-box"><i class="fas fa-user"></i></div>
+              <div class="detail-text">
+                <span class="label">Guest Name</span>
+                <span id="resGuest" class="value"></span>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <div class="icon-box"><i class="fas fa-phone"></i></div>
+              <div class="detail-text">
+                <span class="label">Contact</span>
+                <span id="resContact" class="value"></span>
+              </div>
+            </div>
+
+            <div class="detail-item full-width">
+              <div class="icon-box"><i class="fas fa-map-marker-alt"></i></div>
+              <div class="detail-text">
+                <span class="label">Address</span>
+                <span id="resAddress" class="value"></span>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <div class="icon-box"><i class="fas fa-bed"></i></div>
+              <div class="detail-text">
+                <span class="label">Room Type</span>
+                <span id="resRoom" class="value"></span>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <div class="icon-box"><i class="fas fa-calendar-check"></i></div>
+              <div class="detail-text">
+                <span class="label">Check-in</span>
+                <span id="resCheckIn" class="value"></span>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <div class="icon-box"><i class="fas fa-calendar-times"></i></div>
+              <div class="detail-text">
+                <span class="label">Check-out</span>
+                <span id="resCheckOut" class="value"></span>
+              </div>
+            </div>
+
+            <div class="detail-item highlight">
+              <div class="icon-box"><i class="fas fa-dollar-sign"></i></div>
+              <div class="detail-text">
+                <span class="label">Total Amount</span>
+                <span id="resTotal" class="value price"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-actions">
+            <a href="bill.html" class="btn-action primary">
+              <i class="fas fa-file-invoice"></i> View & Download Bill
+            </a>
+            <button class="btn-action secondary" onclick="clearResult()">
+              <i class="fas fa-redo"></i> New Search
+            </button>
+          </div>
+        </div>
+
+        <!-- No Result / Empty State -->
+        <div id="noResult" class="empty-state card" style="display: none;">
+          <div class="empty-icon">
+            <i class="fas fa-search-minus"></i>
+          </div>
+          <h3>No Booking Found</h3>
+          <p>We couldn't locate any reservation with that number.</p>
+          <p>Please verify and try again.</p>
+          <button class="btn-action secondary" onclick="document.getElementById('reservationNumber').focus()">
+            Try Again
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="main.js"></script>
+  <script>
+    // Username from login (optional)
+    document.addEventListener('DOMContentLoaded', () => {
+      const username = localStorage.getItem('username') || 'Staff';
+      // You can display username in top bar if you want
+    });
+
+    const searchBtn = document.getElementById('searchBtn');
+    const input = document.getElementById('reservationNumber');
+    const resultContainer = document.getElementById('resultContainer');
+    const noResult = document.getElementById('noResult');
+
+    function clearResult() {
+      resultContainer.style.display = 'none';
+      noResult.style.display = 'none';
+      input.value = '';
+      input.focus();
+    }
+
+    searchBtn.addEventListener('click', searchReservation);
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') searchReservation();
+    });
+
+    async function searchReservation() {
+      const number = input.value.trim();
+
+      if (!number || isNaN(number) || number <= 0) {
+        noResult.style.display = 'block';
+        resultContainer.style.display = 'none';
+        noResult.querySelector('p').textContent = 'Please enter a valid reservation number.';
+        return;
+      }
+
+      noResult.style.display = 'none';
+      resultContainer.style.display = 'none';
+
+      try {
+        const res = await fetch(`http://localhost:8080/reservation/${number}`);
+        const data = await res.json();
+
+        if (res.ok && data.reservationNumber) {
+          document.getElementById('resNumberBadge').textContent = `Res #${data.reservationNumber}`;
+          document.getElementById('resGuest').textContent = data.guestName || '—';
+          document.getElementById('resContact').textContent = data.contactNumber || '—';
+          document.getElementById('resAddress').textContent = data.address || '—';
+          document.getElementById('resRoom').textContent = data.roomType || '—';
+          document.getElementById('resCheckIn').textContent = data.checkIn || '—';
+          document.getElementById('resCheckOut').textContent = data.checkOut || '—';
+          document.getElementById('resTotal').textContent = data.totalCost 
+            ? `$${Number(data.totalCost).toFixed(2)}` 
+            : '—';
+
+          resultContainer.style.display = 'block';
+        } else {
+          noResult.style.display = 'block';
+          noResult.querySelector('p').textContent = data.error || 'Reservation not found.';
+        }
+      } catch (err) {
+        noResult.style.display = 'block';
+        noResult.querySelector('p').textContent = 'Failed to connect to server.';
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>

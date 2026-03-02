@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard • Ocean View Resort</title>
+  <link rel="stylesheet" href="style-base.css">
+  <link rel="stylesheet" href="style-dashboard.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <h1>Ocean View</h1>
+        <p>Staff Portal</p>
+      </div>
+
+      <nav>
+        <a href="dashboard.html" class="active">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="add.html">
+          <i class="fas fa-plus-circle"></i>
+          <span>New Reservation</span>
+        </a>
+        <a href="view.html">
+          <i class="fas fa-search"></i>
+          <span>View Reservations</span>
+        </a>
+        <a href="bill.html">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <span>Bills & Payments</span>
+        </a>
+        <a href="help.html">
+          <i class="fas fa-question-circle"></i>
+          <span>Help</span>
+        </a>
+      </nav>
+
+      <!-- Logout button with confirmation -->
+      <button onclick="logout()" class="btn-logout">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Welcome back, <strong id="username-display">Staff</strong></p>
+        </div>
+        <div class="user-info">
+          <span>Admin</span>
+          <div class="avatar">AV</div>
+        </div>
+      </header>
+
+      <!-- Stats Cards -->
+      <section class="stats">
+        <div class="stat-card">
+          <div class="icon"><i class="fas fa-bed"></i></div>
+          <div class="info">
+            <h3>Today's Check-ins</h3>
+            <p class="number">32</p>
+            <p class="change positive">+18% from yesterday</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="icon"><i class="fas fa-dollar-sign"></i></div>
+          <div class="info">
+            <h3>Pending Bills</h3>
+            <p class="number">$15,670</p>
+            <p class="change negative">-5% from yesterday</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="icon"><i class="fas fa-calendar-check"></i></div>
+          <div class="info">
+            <h3>Upcoming Bookings</h3>
+            <p class="number">56</p>
+            <p class="change positive">+11% this week</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="icon"><i class="fas fa-star"></i></div>
+          <div class="info">
+            <h3>Guest Rating</h3>
+            <p class="number">4.9 <span class="star">★</span></p>
+            <p class="change positive">+0.3 this month</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent Activity -->
+      <section class="activity-section">
+        <h2>Recent Activity</h2>
+        <div class="activity-list">
+          <div class="activity-item">
+            <div class="activity-icon"><i class="fas fa-plus"></i></div>
+            <div class="activity-details">
+              <p><strong>New reservation</strong> - Deluxe Suite 1402 • Mr. & Mrs. Fernando</p>
+              <span>15 minutes ago</span>
+            </div>
+          </div>
+
+          <div class="activity-item">
+            <div class="activity-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="activity-details">
+              <p><strong>Check-in completed</strong> - Room 512 • Family Rajapaksa</p>
+              <span>1 hour ago</span>
+            </div>
+          </div>
+
+          <div class="activity-item">
+            <div class="activity-icon"><i class="fas fa-file-invoice"></i></div>
+            <div class="activity-details">
+              <p><strong>Invoice generated</strong> - Reservation #214 • $3,200 (Pending)</p>
+              <span>2 hours ago</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="main.js"></script>
+  <script>
+    // Show username from localStorage
+    const username = localStorage.getItem('username') || 'Staff';
+    document.getElementById('username-display').textContent = username;
+  </script>
+</body>
+</html>

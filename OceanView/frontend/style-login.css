@@ -1,0 +1,110 @@
+/* style-login.css – beautiful login page only */
+
+.login-page {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(rgba(0,0,0,0.62), rgba(0,0,0,0.78)),
+              url('images/hotel-home.jpg') center/cover no-repeat fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--card-bg);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.18);
+  text-align: center;
+}
+
+.card-header img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 16 / 6.5;
+  border-bottom: 5px solid var(--primary);
+}
+
+.card-body {
+  padding: 2.5rem 2.5rem 3rem;
+}
+
+.login-card h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 0.5rem;
+}
+
+.login-card .subtitle {
+  color: var(--gray);
+  font-size: 1.05rem;
+  margin-bottom: 2.5rem;
+}
+
+.login-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.form-floating {
+  position: relative;
+}
+
+input {
+  width: 100%;
+  padding: 1.25rem 1.25rem 0.75rem;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  transition: all 0.25s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 5px rgba(59,130,246,0.15);
+  background: white;
+}
+
+label {
+  position: absolute;
+  left: 1.25rem;
+  top: 1.1rem;
+  color: var(--gray);
+  font-size: 1rem;
+  pointer-events: none;
+  transition: all 0.25s ease;
+}
+
+input:focus + label,
+input:not(:placeholder-shown) + label {
+  top: 0.4rem;
+  font-size: 0.875rem;
+  color: var(--primary);
+  background: white;
+  padding: 0 0.5rem;
+}
+
+.btn-login {
+  padding: 1.1rem;
+  background: linear-gradient(90deg, var(--primary), #60a5fa);
+  color: white;
+  font-size: 1.15rem;
+  box-shadow: 0 10px 25px rgba(59,130,246,0.3);
+}
+
+.btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(59,130,246,0.45);
+}

@@ -1,0 +1,222 @@
+/* style-add.css - modern add reservation form with fixed icons */
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar (same as dashboard) */
+.sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+  color: white;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #60a5fa, #a5b4fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo p {
+  font-size: 0.9rem;
+  opacity: 0.7;
+  margin-top: 0.25rem;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  margin: 0.25rem 0;
+  border-radius: 12px;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.sidebar nav a:hover {
+  background: rgba(255,255,255,0.08);
+  color: white;
+}
+
+.sidebar nav a.active {
+  background: rgba(59,130,246,0.2);
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.sidebar nav i {
+  width: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.btn-logout {
+  margin-top: auto;
+  padding: 1rem;
+  background: rgba(239,68,68,0.15);
+  color: #ef4444;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+  background: rgba(239,68,68,0.25);
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  padding: 2.5rem;
+  background: #f9fafb;
+  overflow-y: auto;
+}
+
+.top-bar {
+  margin-bottom: 2rem;
+}
+
+.top-bar h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.top-bar p {
+  color: #64748b;
+  margin-top: 0.5rem;
+}
+
+.form-container {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group.form-floating {
+  position: relative;
+}
+
+.form-group.form-floating input,
+.form-group.form-floating textarea,
+.form-group.form-floating select {
+  width: 100%;
+  padding: 1.5rem 1.25rem 0.75rem 3.5rem; /* left padding for icon */
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  background: white;
+  transition: all 0.25s ease;
+}
+
+.form-group.form-floating input:focus,
+.form-group.form-floating textarea:focus,
+.form-group.form-floating select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 5px rgba(59,130,246,0.15);
+  outline: none;
+}
+
+.form-group.form-floating label {
+  position: absolute;
+  left: 3.5rem; /* moved right to avoid icon */
+  top: 1.2rem;
+  color: var(--gray);
+  font-size: 1rem;
+  pointer-events: none;
+  transition: all 0.25s ease;
+  background: white;
+  padding: 0 0.25rem;
+}
+
+.form-group.form-floating input:focus + label,
+.form-group.form-floating input:not(:placeholder-shown) + label,
+.form-group.form-floating textarea:focus + label,
+.form-group.form-floating textarea:not(:placeholder-shown) + label,
+.form-group.form-floating select:focus + label,
+.form-group.form-floating select:not(:placeholder-shown) + label {
+  top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--primary);
+  left: 3.5rem;
+}
+
+.icon-left {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 1.3rem;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Actions */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  justify-content: flex-end;
+}
+
+.btn-submit {
+  padding: 1rem 2rem;
+  background: linear-gradient(90deg, var(--primary), #60a5fa);
+  color: white;
+  font-size: 1.1rem;
+  box-shadow: 0 8px 20px rgba(59,130,246,0.3);
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(59,130,246,0.45);
+}
+
+.btn-cancel {
+  padding: 1rem 2rem;
+  background: #6b7280;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.btn-cancel:hover {
+  background: #4b5563;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+}

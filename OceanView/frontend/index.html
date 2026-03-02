@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In • Ocean View Resort</title>
+  <link rel="stylesheet" href="style-base.css">
+  <link rel="stylesheet" href="style-login.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-card glass">
+      <div class="card-header">
+        <img src="images/hotel-home.jpg" alt="Ocean View Resort" />
+      </div>
+
+      <div class="card-body">
+        <h1>Ocean View Resort</h1>
+        <p class="subtitle">Staff Access Portal</p>
+
+        <form id="loginForm">
+          <div class="form-floating">
+            <input type="text" id="username" required placeholder=" " autocomplete="off"/>
+            <label for="username">Username</label>
+          </div>
+
+          <div class="form-floating">
+            <input type="password" id="password" required placeholder=" " autocomplete="off"/>
+            <label for="password">Password</label>
+          </div>
+
+          <button type="submit" class="btn-login">Sign In</button>
+
+          <!-- This line was missing - now added -->
+          <p id="message" class="message"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

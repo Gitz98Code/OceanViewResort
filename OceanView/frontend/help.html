@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help & Support • Ocean View Resort</title>
+  <link rel="stylesheet" href="style-base.css">
+  <link rel="stylesheet" href="style-help.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <h1>Ocean View</h1>
+        <p>Staff Portal</p>
+      </div>
+
+      <nav>
+        <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="add.html"><i class="fas fa-plus-circle"></i> New Reservation</a>
+        <a href="view.html"><i class="fas fa-search"></i> View Reservations</a>
+        <a href="bill.html"><i class="fas fa-file-invoice-dollar"></i> Bills & Payments</a>
+        <a href="help.html" class="active"><i class="fas fa-question-circle"></i> Help & Support</a>
+      </nav>
+
+      <button onclick="logout()" class="btn-logout">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <h1>Help & Support</h1>
+        <p>Frequently Asked Questions</p>
+      </header>
+
+      <div class="help-wrapper">
+        <div class="faq-container">
+          <h2 class="faq-title">Frequently Asked Questions</h2>
+
+          <div class="faq-list">
+            <div class="faq-item">
+              <button class="faq-question">
+                <div class="question-icon blue">
+                  <i class="fas fa-plus"></i>
+                </div>
+                <span>How do I add a new reservation?</span>
+                <i class="fas fa-chevron-down chevron"></i>
+              </button>
+              <div class="faq-answer">
+                <p>1. Click <strong>"New Reservation"</strong> in the left sidebar</p>
+                <p>2. Fill in guest name, contact number, address</p>
+                <p>3. Select room type, check-in & check-out dates, number of guests</p>
+                <p>4. Click <strong>"Create Reservation"</strong> — you will get a unique reservation number instantly.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question">
+                <div class="question-icon indigo">
+                  <i class="fas fa-search"></i>
+                </div>
+                <span>How do I search for an existing reservation?</span>
+                <i class="fas fa-chevron-down chevron"></i>
+              </button>
+              <div class="faq-answer">
+                <p>1. Go to <strong>"View Reservations"</strong> from the sidebar</p>
+                <p>2. Enter the reservation number in the search box</p>
+                <p>3. Click <strong>"Search"</strong> — full booking details appear immediately</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question">
+                <div class="question-icon green">
+                  <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <span>How do I generate or download a bill?</span>
+                <i class="fas fa-chevron-down chevron"></i>
+              </button>
+              <div class="faq-answer">
+                <p>Two simple ways:</p>
+                <ul>
+                  <li>From <strong>"View Reservations"</strong>: search → click <strong>"View Bill"</strong> → download PDF</li>
+                  <li>From <strong>"Bills & Payments"</strong>: locate reservation → click <strong>"View"</strong></li>
+                </ul>
+                <p class="mt-3">Use the <strong>"Download PDF Invoice"</strong> button on the bill page.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question">
+                <div class="question-icon red">
+                  <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <span>What should I do if I face an error?</span>
+                <i class="fas fa-chevron-down chevron"></i>
+              </button>
+              <div class="faq-answer">
+                <p>1. Take a screenshot of the error message</p>
+                <p>2. Note what action caused the issue</p>
+                <p>3. Contact support:</p>
+                <div class="contact-box mt-4">
+                  <i class="fas fa-envelope"></i>
+                  <span>oceanview@yahoo.com</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // FAQ Accordion
+    document.querySelectorAll('.faq-question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const answer = btn.nextElementSibling;
+        const isOpen = answer.style.maxHeight && answer.style.maxHeight !== '0px';
+
+        // Close all others
+        document.querySelectorAll('.faq-answer').forEach(ans => {
+          ans.style.maxHeight = '0px';
+        });
+
+        // Toggle current
+        answer.style.maxHeight = isOpen ? '0px' : answer.scrollHeight + 'px';
+      });
+    });
+  </script>
+</body>
+</html>

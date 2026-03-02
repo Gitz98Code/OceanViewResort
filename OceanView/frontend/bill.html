@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bills & Payments • Ocean View Resort</title>
+  <link rel="stylesheet" href="style-base.css">
+  <link rel="stylesheet" href="style-bill.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <h1>Ocean View</h1>
+        <p>Staff Portal</p>
+      </div>
+
+      <nav>
+        <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="add.html"><i class="fas fa-plus-circle"></i> New Reservation</a>
+        <a href="view.html"><i class="fas fa-search"></i> View Reservations</a>
+        <a href="bill.html" class="active"><i class="fas fa-file-invoice-dollar"></i> Bills & Payments</a>
+        <a href="help.html"><i class="fas fa-question-circle"></i> Help</a>
+      </nav>
+
+      <button onclick="logout()" class="btn-logout">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <div>
+          <h1>Bills & Payments</h1>
+          <p>Manage pending invoices and generate receipts</p>
+        </div>
+      </header>
+
+      <!-- Stats Overview -->
+      <section class="stats-overview">
+        <div class="stat-card pending">
+          <i class="fas fa-clock stat-icon"></i>
+          <div class="stat-content">
+            <h3>Total Pending</h3>
+            <p class="amount" id="totalPending">$0.00</p>
+            <p class="count" id="pendingCount">0 reservations</p>
+          </div>
+        </div>
+
+        <div class="stat-card overdue">
+          <i class="fas fa-exclamation-triangle stat-icon"></i>
+          <div class="stat-content">
+            <h3>Overdue</h3>
+            <p class="amount" id="overdueAmount">$0.00</p>
+            <p class="count" id="overdueCount">0 reservations</p>
+          </div>
+        </div>
+
+        <div class="stat-card paid">
+          <i class="fas fa-check-circle stat-icon"></i>
+          <div class="stat-content">
+            <h3>Paid This Week</h3>
+            <p class="amount" id="paidThisWeek">$0.00</p>
+            <p class="count" id="paidCount">0 payments</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Search & Filter -->
+      <section class="search-filter-section card">
+        <div class="search-box">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" id="searchInput" placeholder="Enter Reservation Number..." />
+          <button id="searchBtn" class="btn-search">
+            <i class="fas fa-search"></i> Search
+          </button>
+        </div>
+      </section>
+
+      <!-- Bills Table -->
+      <section class="bills-section card">
+        <div class="section-header">
+          <h2>Pending Bills</h2>
+          <p id="tableTitleInfo">Showing pending reservations only</p>
+        </div>
+
+        <div class="table-responsive">
+          <table class="bills-table">
+            <thead>
+              <tr>
+                <th>Res #</th>
+                <th>Guest</th>
+                <th>Check-out</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="billsTableBody"></tbody>
+          </table>
+        </div>
+
+        <div id="noBillsMessage" class="no-data" style="display: none;">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <h3>No Pending Bills Found</h3>
+          <p id="noBillsText">No pending reservations in the system or no match found.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="main.js"></script>
+  <script>
+    const searchBtn = document.getElementById('searchBtn');
+    const searchInput = document.getElementById('searchInput');
+    const tableBody = document.getElementById('billsTableBody');
+    const noBillsMessage = document.getElementById('noBillsMessage');
+    const noBillsText = document.getElementById('noBillsText');
+    const tableTitleInfo = document.getElementById('tableTitleInfo');
+
+    let allBills = [];        // all reservations from backend
+    let pendingBills = [];    // filtered pending only
+
+    // Load all reservations and show pending by default
+    async function loadBills() {
+      try {
+        // IMPORTANT: Change to your real endpoint that returns ALL reservations
+        const response = await fetch('http://localhost:8080/reservations'); // <--- adjust this URL
+
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status}`);
+        }
+
+        const reservations = await response.json();
+
+        // Map to bill format
+        allBills = reservations.map(res => ({
+          id: res.reservationNumber,
+          guest: res.guestName || 'Unknown Guest',
+          checkout: res.checkOut || '—',
+          amount: Number(res.totalCost || 0),
+          status: determineBillStatus(res) // customize as needed
+        }));
+
+        // Filter pending bills
+        pendingBills = allBills.filter(b => b.status === 'pending');
+
+        renderBills(pendingBills);
+        updateStats(allBills);
+      } catch (err) {
+        console.error('Failed to load bills:', err);
+        noBillsMessage.style.display = 'block';
+        noBillsText.textContent = 'Failed to load data. Check if backend is running.';
+      }
+    }
+
+    function determineBillStatus(res) {
+      // Simple logic - improve with real payment status if available
+      if (!res.checkOut) return 'pending';
+      const checkoutDate = new Date(res.checkOut);
+      const today = new Date();
+      if (checkoutDate < today) return 'overdue';
+      return 'pending';
+    }
+
+    function renderBills(bills) {
+      tableBody.innerHTML = '';
+
+      if (bills.length === 0) {
+        noBillsMessage.style.display = 'block';
+        return;
+      }
+
+      noBillsMessage.style.display = 'none';
+
+      bills.forEach(bill => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>#${bill.id}</td>
+          <td>${bill.guest}</td>
+          <td>${bill.checkout}</td>
+          <td class="amount">$${bill.amount.toFixed(2)}</td>
+          <td><span class="status-badge ${bill.status}">${bill.status.charAt(0).toUpperCase() + bill.status.slice(1)}</span></td>
+          <td>
+            <button class="btn-view" onclick="viewBill(${bill.id})">
+              <i class="fas fa-eye"></i> View
+            </button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function updateStats(all) {
+      const pending = all.filter(b => b.status === 'pending');
+      const overdue = all.filter(b => b.status === 'overdue');
+      const paid = all.filter(b => b.status === 'paid');
+
+      document.getElementById('totalPending').textContent = `$${pending.reduce((sum, b) => sum + b.amount, 0).toLocaleString()}`;
+      document.getElementById('pendingCount').textContent = `${pending.length} reservations`;
+
+      document.getElementById('overdueAmount').textContent = `$${overdue.reduce((sum, b) => sum + b.amount, 0).toLocaleString()}`;
+      document.getElementById('overdueCount').textContent = `${overdue.length} reservations`;
+
+      document.getElementById('paidThisWeek').textContent = `$${paid.reduce((sum, b) => sum + b.amount, 0).toLocaleString()}`;
+      document.getElementById('paidCount').textContent = `${paid.length} payments`;
+    }
+
+    function viewBill(id) {
+      // Redirect to detailed bill page with reservation ID
+      window.location.href = `bill-detail.html?res=${id}`;
+      // Or show modal / generate PDF directly
+    }
+
+    // Search by reservation number (when button clicked)
+    searchBtn.addEventListener('click', async () => {
+      const searchValue = searchInput.value.trim();
+
+      if (!searchValue || isNaN(searchValue)) {
+        alert('Please enter a valid reservation number');
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:8080/reservation/${searchValue}`);
+        if (!response.ok) throw new Error('Reservation not found');
+
+        const data = await response.json();
+
+        if (data && data.reservationNumber) {
+          const bill = {
+            id: data.reservationNumber,
+            guest: data.guestName || 'Unknown',
+            checkout: data.checkOut || '—',
+            amount: data.totalCost || 0,
+            status: determineBillStatus(data)
+          };
+
+          renderBills([bill]); // show only this one record
+          tableTitleInfo.textContent = `Showing result for reservation #${searchValue}`;
+        } else {
+          noBillsMessage.style.display = 'block';
+          noBillsText.textContent = `No bill found for reservation #${searchValue}`;
+        }
+      } catch (err) {
+        noBillsMessage.style.display = 'block';
+        noBillsText.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    // Load all pending bills on page load
+    window.addEventListener('load', loadBills);
+  </script>
+</body>
+</html>

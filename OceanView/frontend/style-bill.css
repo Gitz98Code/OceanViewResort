@@ -1,0 +1,362 @@
+/* style-bill.css - modern bills & payments page */
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+  color: white;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 25px rgba(0,0,0,0.25);
+}
+
+.logo h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #60a5fa, #a5b4fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo p {
+  font-size: 0.9rem;
+  opacity: 0.7;
+  margin-top: 0.25rem;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  margin: 0.25rem 0;
+  border-radius: 12px;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.sidebar nav a:hover {
+  background: rgba(255,255,255,0.08);
+  color: white;
+}
+
+.sidebar nav a.active {
+  background: rgba(59,130,246,0.2);
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.sidebar nav i {
+  width: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.btn-logout {
+  margin-top: auto;
+  padding: 1rem;
+  background: rgba(239,68,68,0.15);
+  color: #ef4444;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+  background: rgba(239,68,68,0.25);
+}
+
+.main-content {
+  flex: 1;
+  padding: 2.5rem;
+  background: #f9fafb;
+  overflow-y: auto;
+}
+
+.top-bar {
+  margin-bottom: 2.5rem;
+}
+
+.top-bar h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.top-bar p {
+  color: #64748b;
+  margin-top: 0.5rem;
+}
+
+/* Stats */
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.75rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.75rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-6px);
+}
+
+.stat-icon {
+  font-size: 2.25rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+.stat-card.pending .stat-icon { background: rgba(251,191,36,0.1); color: #f59e0b; }
+.stat-card.overdue .stat-icon { background: rgba(239,68,68,0.1); color: #ef4444; }
+.stat-card.paid .stat-icon { background: rgba(16,185,129,0.1); color: #10b981; }
+
+.stat-content h3 {
+  font-size: 1rem;
+  color: var(--gray);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.amount {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.count {
+  font-size: 0.95rem;
+  color: var(--gray);
+  margin-top: 0.5rem;
+}
+
+/* Search Section */
+.search-section.card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+}
+
+.search-section .search-box {
+  display: flex;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.search-section input {
+  flex: 1;
+  padding: 1rem 1rem 1rem 3.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 1.05rem;
+}
+
+.search-section input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 5px rgba(59,130,246,0.15);
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 1.3rem;
+  pointer-events: none;
+}
+
+.btn-search {
+  padding: 1rem 2rem;
+  background: linear-gradient(90deg, var(--primary), #60a5fa);
+  color: white;
+  font-size: 1.05rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.btn-search:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(59,130,246,0.35);
+}
+
+/* Table Section */
+.bills-section.card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #f1f5f9;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.section-header h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.bills-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bills-table th,
+.bills-table td {
+  padding: 1.25rem 2rem;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.bills-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #4b5563;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.bills-table td.amount {
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.status-badge {
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-badge.pending { background: #fef3c7; color: #92400e; }
+.status-badge.overdue { background: #fee2e2; color: #991b1b; }
+.status-badge.paid { background: #ecfdf5; color: #065f46; }
+
+.btn-view {
+  padding: 0.6rem 1.25rem;
+  background: var(--primary);
+  color: white;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+}
+
+.btn-view:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+/* No Data */
+.no-data {
+  text-align: center;
+  padding: 6rem 2rem;
+}
+
+.no-data i {
+  font-size: 5rem;
+  color: #d1d5db;
+  margin-bottom: 1.5rem;
+}
+
+.no-data h3 {
+  font-size: 1.6rem;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 80px;
+  }
+
+  .sidebar .logo p,
+  .sidebar nav a span {
+    display: none;
+  }
+
+  .main-content {
+    margin-left: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .stats-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .bills-table thead {
+    display: none;
+  }
+
+  .bills-table tr {
+    display: block;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+  }
+
+  .bills-table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    border: none;
+  }
+
+  .bills-table td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--gray);
+  }
+}
