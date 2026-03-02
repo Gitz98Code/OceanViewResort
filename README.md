@@ -1,8 +1,8 @@
-# Ocean View Resort Portal
+# Ocean View Resort 
 
 ## Demo
 
-Check out the live demo of the project here: [Ocean View Resort Portal Demo](https://drive.google.com/file/d/1b0ABatm5gq8yBcZcHkygeTTdvyzO39tS/view?usp=drive_link)
+Check out the live demo of the project here: [Ocean View Resort  Demo](https://drive.google.com/file/d/1b0ABatm5gq8yBcZcHkygeTTdvyzO39tS/view?usp=drive_link)
 
 ## Project Overview
 
