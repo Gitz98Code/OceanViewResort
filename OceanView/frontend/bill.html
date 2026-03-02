@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="style-base.css">
   <link rel="stylesheet" href="style-bill.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- jsPDF for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <div class="dashboard-container">
@@ -80,15 +82,15 @@
         </div>
       </section>
 
-      <!-- Bills Table -->
+      <!-- Bills Table / Single Bill View -->
       <section class="bills-section card">
         <div class="section-header">
-          <h2>Pending Bills</h2>
-          <p id="tableTitleInfo">Showing pending reservations only</p>
+          <h2 id="tableTitle">Pending Bills</h2>
+          <p id="tableSubtitle">Showing pending reservations only</p>
         </div>
 
         <div class="table-responsive">
-          <table class="bills-table">
+          <table class="bills-table" id="billsTable">
             <thead>
               <tr>
                 <th>Res #</th>
@@ -101,6 +103,38 @@
             </thead>
             <tbody id="billsTableBody"></tbody>
           </table>
+        </div>
+
+        <!-- Single Bill Details -->
+        <div id="singleBillView" style="display: none; padding: 2rem;">
+          <div class="bill-detail-header">
+            <h2>Reservation Invoice</h2>
+            <span id="billResNumber" class="badge"></span>
+          </div>
+
+          <div class="bill-detail-grid">
+            <div class="detail-row">
+              <span class="label">Guest Name</span>
+              <span id="billGuest" class="value"></span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Check-out Date</span>
+              <span id="billCheckOut" class="value"></span>
+            </div>
+            <div class="detail-row highlight">
+              <span class="label">Total Amount</span>
+              <span id="billTotal" class="value price"></span>
+            </div>
+          </div>
+
+          <div class="bill-actions">
+            <button id="downloadPdfBtn" class="btn-download">
+              <i class="fas fa-download"></i> Download Invoice as PDF
+            </button>
+            <button class="btn-secondary" onclick="showAllBills()">
+              <i class="fas fa-arrow-left"></i> Back to List
+            </button>
+          </div>
         </div>
 
         <div id="noBillsMessage" class="no-data" style="display: none;">
@@ -116,58 +150,43 @@
   <script>
     const searchBtn = document.getElementById('searchBtn');
     const searchInput = document.getElementById('searchInput');
-    const tableBody = document.getElementById('billsTableBody');
+    const billsTableBody = document.getElementById('billsTableBody');
     const noBillsMessage = document.getElementById('noBillsMessage');
     const noBillsText = document.getElementById('noBillsText');
-    const tableTitleInfo = document.getElementById('tableTitleInfo');
+    const tableTitle = document.getElementById('tableTitle');
+    const tableSubtitle = document.getElementById('tableSubtitle');
+    const singleBillView = document.getElementById('singleBillView');
+    const billsTable = document.getElementById('billsTable');
 
-    let allBills = [];        // all reservations from backend
-    let pendingBills = [];    // filtered pending only
+    let allReservations = [];
 
-    // Load all reservations and show pending by default
     async function loadBills() {
       try {
-        // IMPORTANT: Change to your real endpoint that returns ALL reservations
-        const response = await fetch('http://localhost:8080/reservations'); // <--- adjust this URL
+        const response = await fetch('http://localhost:8080/reservations');
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
-        if (!response.ok) {
-          throw new Error(`Server error: ${response.status}`);
-        }
+        allReservations = await response.json();
 
-        const reservations = await response.json();
+        const pending = allReservations.filter(res => {
+          const isOverdue = res.checkOut && new Date(res.checkOut) < new Date();
+          return !res.paid || isOverdue;
+        });
 
-        // Map to bill format
-        allBills = reservations.map(res => ({
-          id: res.reservationNumber,
-          guest: res.guestName || 'Unknown Guest',
-          checkout: res.checkOut || '—',
-          amount: Number(res.totalCost || 0),
-          status: determineBillStatus(res) // customize as needed
-        }));
-
-        // Filter pending bills
-        pendingBills = allBills.filter(b => b.status === 'pending');
-
-        renderBills(pendingBills);
-        updateStats(allBills);
+        renderBills(pending);
+        updateStats(allReservations);
+        tableTitle.textContent = "Pending Bills";
+        tableSubtitle.textContent = `Showing ${pending.length} pending reservation${pending.length !== 1 ? 's' : ''}`;
+        singleBillView.style.display = 'none';
+        billsTable.style.display = 'table';
       } catch (err) {
         console.error('Failed to load bills:', err);
         noBillsMessage.style.display = 'block';
-        noBillsText.textContent = 'Failed to load data. Check if backend is running.';
+        noBillsText.textContent = 'Failed to load data from server.';
       }
     }
 
-    function determineBillStatus(res) {
-      // Simple logic - improve with real payment status if available
-      if (!res.checkOut) return 'pending';
-      const checkoutDate = new Date(res.checkOut);
-      const today = new Date();
-      if (checkoutDate < today) return 'overdue';
-      return 'pending';
-    }
-
     function renderBills(bills) {
-      tableBody.innerHTML = '';
+      billsTableBody.innerHTML = '';
 
       if (bills.length === 0) {
         noBillsMessage.style.display = 'block';
@@ -176,83 +195,109 @@
 
       noBillsMessage.style.display = 'none';
 
-      bills.forEach(bill => {
+      bills.forEach(res => {
+        const isOverdue = res.checkOut && new Date(res.checkOut) < new Date();
+        const status = isOverdue ? 'overdue' : 'pending';
+
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>#${bill.id}</td>
-          <td>${bill.guest}</td>
-          <td>${bill.checkout}</td>
-          <td class="amount">$${bill.amount.toFixed(2)}</td>
-          <td><span class="status-badge ${bill.status}">${bill.status.charAt(0).toUpperCase() + bill.status.slice(1)}</span></td>
+          <td>#${res.reservationNumber}</td>
+          <td>${res.guestName || '—'}</td>
+          <td>${res.checkOut || '—'}</td>
+          <td class="amount">$${Number(res.totalCost || 0).toFixed(2)}</td>
+          <td><span class="status-badge ${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span></td>
           <td>
-            <button class="btn-view" onclick="viewBill(${bill.id})">
+            <button class="btn-view" onclick="loadSingleBill(${res.reservationNumber})">
               <i class="fas fa-eye"></i> View
             </button>
           </td>
         `;
-        tableBody.appendChild(row);
+        billsTableBody.appendChild(row);
       });
     }
 
-    function updateStats(all) {
-      const pending = all.filter(b => b.status === 'pending');
-      const overdue = all.filter(b => b.status === 'overdue');
-      const paid = all.filter(b => b.status === 'paid');
-
-      document.getElementById('totalPending').textContent = `$${pending.reduce((sum, b) => sum + b.amount, 0).toLocaleString()}`;
-      document.getElementById('pendingCount').textContent = `${pending.length} reservations`;
-
-      document.getElementById('overdueAmount').textContent = `$${overdue.reduce((sum, b) => sum + b.amount, 0).toLocaleString()}`;
-      document.getElementById('overdueCount').textContent = `${overdue.length} reservations`;
-
-      document.getElementById('paidThisWeek').textContent = `$${paid.reduce((sum, b) => sum + b.amount, 0).toLocaleString()}`;
-      document.getElementById('paidCount').textContent = `${paid.length} payments`;
-    }
-
-    function viewBill(id) {
-      // Redirect to detailed bill page with reservation ID
-      window.location.href = `bill-detail.html?res=${id}`;
-      // Or show modal / generate PDF directly
-    }
-
-    // Search by reservation number (when button clicked)
-    searchBtn.addEventListener('click', async () => {
-      const searchValue = searchInput.value.trim();
-
-      if (!searchValue || isNaN(searchValue)) {
-        alert('Please enter a valid reservation number');
-        return;
-      }
-
+    async function loadSingleBill(id) {
       try {
-        const response = await fetch(`http://localhost:8080/reservation/${searchValue}`);
+        const response = await fetch(`http://localhost:8080/reservation/${id}`);
         if (!response.ok) throw new Error('Reservation not found');
 
         const data = await response.json();
 
         if (data && data.reservationNumber) {
-          const bill = {
-            id: data.reservationNumber,
-            guest: data.guestName || 'Unknown',
-            checkout: data.checkOut || '—',
-            amount: data.totalCost || 0,
-            status: determineBillStatus(data)
-          };
+          document.getElementById('billResNumber').textContent = `Res #${data.reservationNumber}`;
+          document.getElementById('billGuest').textContent = data.guestName || '—';
+          document.getElementById('billCheckOut').textContent = data.checkOut || '—';
+          document.getElementById('billTotal').textContent = data.totalCost 
+            ? `$${Number(data.totalCost).toFixed(2)}` 
+            : '—';
 
-          renderBills([bill]); // show only this one record
-          tableTitleInfo.textContent = `Showing result for reservation #${searchValue}`;
+          singleBillView.style.display = 'block';
+          billsTable.style.display = 'none';
+          tableTitle.textContent = `Invoice for Reservation #${data.reservationNumber}`;
+          tableSubtitle.textContent = 'Detailed bill view';
         } else {
-          noBillsMessage.style.display = 'block';
-          noBillsText.textContent = `No bill found for reservation #${searchValue}`;
+          alert('Reservation not found');
         }
       } catch (err) {
-        noBillsMessage.style.display = 'block';
-        noBillsText.textContent = `Error: ${err.message}`;
+        console.error(err);
+        alert('Failed to load bill details. Check console for error.');
       }
+    }
+
+    function showAllBills() {
+      singleBillView.style.display = 'none';
+      billsTable.style.display = 'table';
+      tableTitle.textContent = "Pending Bills";
+      tableSubtitle.textContent = "Showing pending reservations only";
+    }
+
+    // PDF Download with real data
+    document.getElementById('downloadPdfBtn')?.addEventListener('click', () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Header
+      doc.setFillColor(59, 130, 246);
+      doc.rect(0, 0, 210, 50, 'F');
+      doc.setFontSize(24);
+      doc.setTextColor(255, 255, 255);
+      doc.text("Ocean View Resort", 105, 30, { align: "center" });
+      doc.setFontSize(16);
+      doc.text("Official Invoice", 105, 42, { align: "center" });
+
+      // Bill Details
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text("Reservation Number: " + (document.getElementById('billResNumber')?.textContent || '—'), 20, 65);
+      doc.text("Guest Name: " + (document.getElementById('billGuest')?.textContent || '—'), 20, 75);
+      doc.text("Check-out Date: " + (document.getElementById('billCheckOut')?.textContent || '—'), 20, 85);
+
+      doc.setFontSize(18);
+      doc.setTextColor(39, 174, 96);
+      doc.text("Total Amount: " + (document.getElementById('billTotal')?.textContent || '—'), 20, 110);
+
+      // Footer
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text("Generated on: " + new Date().toLocaleString(), 20, 130);
+      doc.text("Thank you for choosing Ocean View Resort!", 105, 280, { align: "center" });
+
+      // Save PDF with meaningful name
+      const resNum = document.getElementById('billResNumber')?.textContent.replace('Res #', '') || 'unknown';
+      doc.save(`OceanView_Invoice_${resNum}.pdf`);
     });
 
-    // Load all pending bills on page load
-    window.addEventListener('load', loadBills);
+    // Load bills on page load + check for ?res= parameter
+    window.addEventListener('load', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const resNumber = urlParams.get('res');
+
+      if (resNumber) {
+        await loadSingleBill(resNumber);
+      } else {
+        await loadBills();
+      }
+    });
   </script>
 </body>
 </html>

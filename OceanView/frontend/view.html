@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>View Reservations • Ocean View Resort</title>
   <link rel="stylesheet" href="style-base.css">
   <link rel="stylesheet" href="style-view.css">
@@ -135,7 +135,7 @@
           </div>
 
           <div class="result-actions">
-            <a href="bill.html" class="btn-action primary">
+            <a id="viewBillBtn" href="#" class="btn-action primary">
               <i class="fas fa-file-invoice"></i> View & Download Bill
             </a>
             <button class="btn-action secondary" onclick="clearResult()">
@@ -162,16 +162,11 @@
 
   <script src="main.js"></script>
   <script>
-    // Username from login (optional)
-    document.addEventListener('DOMContentLoaded', () => {
-      const username = localStorage.getItem('username') || 'Staff';
-      // You can display username in top bar if you want
-    });
-
     const searchBtn = document.getElementById('searchBtn');
     const input = document.getElementById('reservationNumber');
     const resultContainer = document.getElementById('resultContainer');
     const noResult = document.getElementById('noResult');
+    const viewBillBtn = document.getElementById('viewBillBtn');
 
     function clearResult() {
       resultContainer.style.display = 'none';
@@ -213,6 +208,9 @@
           document.getElementById('resTotal').textContent = data.totalCost 
             ? `$${Number(data.totalCost).toFixed(2)}` 
             : '—';
+
+          // Set the link to bill.html with reservation number
+          viewBillBtn.href = `bill.html?res=${data.reservationNumber}`;
 
           resultContainer.style.display = 'block';
         } else {
